@@ -6,10 +6,10 @@ module Lita
   end
 
   def setup_scheduler
-    Lita::Standup.all.each do |standup|
-      scheduler.cron standup.cron_line, tags: [:standups, standup.id], standup_id: standup.id do |job|
-        Lita::Standup.find(job.opts[:standup_id]).run
-      end
-    end
+    # Lita::Standup.all.each do |standup|
+    #   scheduler.cron standup.cron_line, tags: [:standups, standup.id], standup_id: standup.id do |job|
+    #     Lita::Standup.find(job.opts[:standup_id]).run
+    #   end
+    # end
   end
 end
