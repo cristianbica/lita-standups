@@ -5,7 +5,7 @@ Gem::Specification.new do |spec|
   spec.email         = ["cristian.bica@gmail.com"]
   spec.description   = "Lita standups"
   spec.summary       = "Lita standups"
-  spec.homepage      = "https://github.com/cristian.bica"
+  spec.homepage      = "https://github.com/cristianbica"
   spec.license       = "MIT"
   spec.metadata      = { "lita_plugin_type" => "handler" }
 
@@ -17,6 +17,8 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency "lita", ">= 4.7"
   spec.add_runtime_dependency "lita-wizard"
   spec.add_runtime_dependency "rufus-scheduler"
+  spec.add_runtime_dependency "ohm"
+  spec.add_runtime_dependency "ohm-contrib"
 
   spec.add_development_dependency "bundler", "~> 1.3"
   spec.add_development_dependency "pry-byebug"

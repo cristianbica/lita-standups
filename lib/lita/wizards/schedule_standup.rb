@@ -1,9 +1,6 @@
 module Lita
   module Wizards
-    class CreateStandup < Lita::Wizard
-
-      step :name,
-           label: 'Please give it a name:'
+    class ScheduleStandup < Lita::Wizard
 
       step :repeat,
            label: 'How often? (daily, weekly)',
@@ -18,35 +15,39 @@ module Lita
            label: 'At what time? (ex 9am)',
            validate: /^([1-9]|1[0-2]|0[1-9])?(:[0-5][0-9])?\s?([aApP][mM])?$/
 
-      step :questions,
-           label: 'Enter the standup questions below (one message, one question per line): '
+      step :recipients,
+           label: 'Enter the standup members (one message, separated by comma / space / new line): '
 
       step :channel,
            label: 'On what channel do you want to post the results to?'
 
       def finish_wizard
-        Lita::Standup.create(
+        Lita::Standups::Schedule.create(
           id: id,
-          name: value_for(:name),
+          standup_id: standup.id,
           repeat: value_for(:repeat),
           day_of_week: value_for(:day_of_week),
           time: value_for(:time),
-          questions: value_for(:questions),
+          recipients: value_for(:recipients),
           channel: value_for(:channel)
         )
       end
 
       def final_message
         [
-          "You're done! Below is the summary of your standup:",
+          "You're done! Below is the summary of your scheduled standup:",
           ">>>",
           "ID: #{id}",
-          "Name: #{value_for(:name)}",
+          "Standup: #{standup.name}",
           "Running #{value_for(:repeat)} " + (weekly? ? "on #{value_for(:day_of_week)} " : "") + "at #{value_for(:time)}",
-          "Questions:",
-          value_for(:questions),
+          "Recipients:",
+          value_for(:recipients),
           "Sending the result on #{value_for(:channel)}"
         ].join("\n")
+      end
+
+      def standup
+        @standup ||= Lita::Standups::Standup.find(meta['standup_id'])
       end
 
       def weekly?
