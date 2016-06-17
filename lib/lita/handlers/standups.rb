@@ -38,6 +38,14 @@ module Lita
             command: true,
             help: { 'run standup STANDUP_ID with USERS' => 'runs a standup now (users space/comma separated)' })
 
+      route(/^list standup sessions$/, :list_standup_sessions,
+            command: true,
+            help: { 'list standup sessions' => 'list all standups sessions' })
+
+      route(/^show standup session (\w+)$/, :show_standup_session,
+            command: true,
+            help: { 'show standup session SESSION_ID' => 'show a standups session details' })
+
       def list_standups(request)
         standups = Models::Standup.all.to_a
         message = "Standups found: #{standups.size}."
@@ -116,6 +124,21 @@ module Lita
         end
       end
 
+      def list_standup_sessions(request)
+        sessions = Models::StandupSession.all.to_a
+        message = "Sessions found: #{sessions.size}."
+        message << " Here they are: \n" if sessions.size>0
+        message << sessions.map(&:summary).join("\n")
+        request.reply message
+      end
+
+      def show_standup_session(request)
+        session = Models::StandupSession[request.matches[0][0]]
+        message = "Here are the standup session details: \n #{session.description}\n"
+        message << "\n*Responses:*\n"
+        message << session.report_message
+        request.reply message
+      end
 
       def self.const_missing(name)
         Lita::Standups.const_defined?(name) ? Lita::Standups.const_get(name) : super

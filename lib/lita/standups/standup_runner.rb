@@ -44,21 +44,8 @@ module Lita
       end
 
       def post_results(session)
-        messages = []
-        messages << "The standup '#{standup.name}' has finished. Here's what everyone posted:"
-        messages << "\n"
-        session.standup_responses.each do |response|
-          messages << "#{response.user.name} (a.k.a @#{response.user.mention_name})"
-          standup.questions.each.with_index do |question, index|
-            messages << "> *#{question}*"
-            response.answers[index].split("\n").each do |line|
-              messages << "> #{line}"
-            end
-            messages << "> "
-          end
-          messages << ""
-        end
-        robot.send_message room, messages.join("\n")
+        message = "The standup '#{standup.name}' has finished. Here's what everyone posted:\n#{session.report_message}"
+        robot.send_message room, message
       end
 
     end

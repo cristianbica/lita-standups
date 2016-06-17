@@ -40,6 +40,23 @@ module Lita
           save
         end
 
+        def report_message
+          standup_responses.map(&:report_message).join("\n")
+        end
+
+        def summary
+          "ID: #{id} - standup #{standup.name} ran on #{created_at.strftime('%c')}"
+        end
+
+        def description
+          messages = ["ID: #{id}"]
+          messages << "Standup: #{standup.name}"
+          messages << "Date: #{created_at.strftime('%c')}"
+          messages << "Total recipients: #{counts['total']}"
+          messages << "Total finished: #{counts['finished']}"
+          messages.join("\n")
+        end
+
       end
     end
   end
