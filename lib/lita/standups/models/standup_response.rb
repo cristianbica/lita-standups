@@ -13,6 +13,9 @@ module Lita
 
         reference :standup_session, StandupSession
 
+        index :status
+        index :user_id
+
         def user
           @user ||= Lita::User.fuzzy_find(user_id)
         end

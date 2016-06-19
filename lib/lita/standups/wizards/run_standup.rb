@@ -25,6 +25,11 @@ module Lita
           end
         end
 
+        def start_wizard
+          response.running!
+          response.save
+        end
+
         def abort_wizard
           response.aborted!
           response.save
@@ -36,13 +41,7 @@ module Lita
           response.save
           if session.completed?
             robot = message.instance_variable_get(:"@robot")
-            Lita::Standups::StandupRunner.new(
-              robot: robot,
-              standup_id: standup.id,
-              schedule_id: session.standup_schedule_id,
-              recipients: [],
-              room: session.room
-            ).post_results(session)
+            Lita::Standups::Manager.post_results(robot: robot, session: session)
           end
         end
 

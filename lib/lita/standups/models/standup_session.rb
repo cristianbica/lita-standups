@@ -10,10 +10,15 @@ module Lita
         attribute :status
         attribute :room
         attribute :counts, Type::Hash
+        attribute :recipients, Type::Array
+        attribute :results_sent, Type::Boolean
 
         reference :standup, Standup
         reference :standup_schedule, StandupSchedule
         collection :standup_responses, StandupResponse, :standup_session
+
+        index :status
+        index :date
 
         def before_create
           self.status = 'pending'
@@ -34,7 +39,6 @@ module Lita
             counts[r.status] = counts[r.status].to_i + 1
             counts['total'] = counts['total'] + 1
             counts['finished'] = counts['finished'] + 1 if r.finished?
-            Lita.logger.debug counts.inspect
           end
           completed! if counts['total'] == counts['finished']
           save
@@ -55,6 +59,10 @@ module Lita
           messages << "Total recipients: #{counts['total']}"
           messages << "Total finished: #{counts['finished']}"
           messages.join("\n")
+        end
+
+        def data
+          (created_at || Time.current).strftime("%Y-%m-%d")
         end
 
       end

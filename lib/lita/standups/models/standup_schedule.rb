@@ -15,7 +15,6 @@ module Lita
 
         reference :standup, Standup
 
-
         def cron_line
           [
             time.min,
