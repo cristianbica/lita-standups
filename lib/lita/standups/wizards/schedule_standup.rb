@@ -32,7 +32,7 @@ module Lita
             recipients: value_for(:recipients).to_s.gsub("@", "").split(/[\s,\n]/m).map(&:strip).map(&:presence).compact,
             channel: value_for(:channel)
           )
-          Lita.logger.debug @schedule.inspect
+          robot.schedule_standup(@schedule)
         end
 
         def final_message

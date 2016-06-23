@@ -97,6 +97,7 @@ module Lita
       def delete_standups_schedule(request)
         schedule = Models::StandupSchedule[request.matches[0][0]]
         if schedule
+          robot.unschedule_standup(schedule)
           schedule.delete
           request.reply "Schedule with ID #{schedule.id} has been deleted"
         else

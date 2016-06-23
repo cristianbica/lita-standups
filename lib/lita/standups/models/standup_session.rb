@@ -18,10 +18,11 @@ module Lita
         collection :standup_responses, StandupResponse, :standup_session
 
         index :status
-        index :date
+        index :results_sent
 
         def before_create
           self.status = 'pending'
+          self.results_sent = false
         end
 
         %w(pending running completed).each do |status_name|

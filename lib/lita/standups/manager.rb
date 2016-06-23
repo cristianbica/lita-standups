@@ -2,10 +2,12 @@ module Lita
   module Standups
     class Manager
 
-      def run(robot:, standup_id:, recipient:, room:)
+      EXPIRATION_TIME = 3600
+
+      def self.run(robot:, standup_id:, recipients:, room:)
         session = Models::StandupSession.create(
           standup_id: standup_id,
-          recipient: recipient,
+          recipients: recipients,
           room: room
         )
         new(robot: robot, session: session).run
@@ -15,27 +17,35 @@ module Lita
         schedule = Models::StandupSchedule[schedule_id]
         session = Models::StandupSession.create(
           standup_id: schedule.standup_id,
-          schedule_id: schedule.id,
-          recipient: schedule.recipient,
+          standup_schedule_id: schedule.id,
+          recipients: schedule.recipients,
           room: schedule.channel
         )
         new(robot: robot, session: session).run
       end
 
-      def self.send_reminders(robot:)
-
+      def self.abort_expired_standups(robot:)
+        Lita::Standups::Models::StandupResponse.find(status: "pending").union(status: "running").each do |response|
+          next unless Time.current - response.created_at > EXPIRATION_TIME
+          response.expired!
+          response.save
+          Lita::Wizard.cancel_wizard(response.user.id)
+          target = Lita::Source.new(user: response.user, room: nil, private_message: true)
+          robot.send_message target, "Expired. See you next time!"
+        end
       end
 
-      def self.abort_expired(robot:)
-
+      def self.complete_finished_standups(robot:)
+        Lita::Standups::Models::StandupSession.find(status: "completed", results_sent: false).each do |session|
+          new(robot: robot, session: session).post_results
+        end
       end
-
 
       attr_accessor :robot, :session
 
       def initialize(robot:, session:)
         @robot = robot
-        @session = robot
+        @session = session
       end
 
       def standup
@@ -63,9 +73,9 @@ module Lita
         Wizards::RunStandup.start robot, dummy_message, 'response_id' => response.id
       end
 
-      def post_results(session)
+      def post_results
         return if session.results_sent
-        message = "The standup '#{standup.name}' has finished. Here's what everyone posted:\n#{session.report_message}"
+        message = "The standup '#{standup.name}' has finished. Here's what everyone posted:\n\n#{session.report_message}"
         robot.send_message room, message
         session.results_sent = true
         session.save

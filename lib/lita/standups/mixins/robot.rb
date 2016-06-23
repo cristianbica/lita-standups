@@ -14,14 +14,23 @@ module Lita
         def schedule_standups
           scheduler.jobs.each(&:unschedule)
           scheduler.cron '* * * * *' do |job|
-            Lita::Standups::Manager.send_reminders(robot: self)
-            Lita::Standups::Manager.abort_expired(robot: self)
+            Lita::Standups::Manager.abort_expired_standups(robot: self)
+            Lita::Standups::Manager.complete_finished_standups(robot: self)
           end
-          # Lita::Standups::Schedule.all.each do |schedule|
-          #   scheduler.cron standup.cron_line, tags: [:schedules, schedule.id], schedule_id: schedule.id do |job|
-          #     Lita::Standups::Manager.run_schedule(robot: self, schedule_id: job.opts[:schedule_id])
-          #   end
-          # end
+          Models::StandupSchedule.all.each do |standup_schedule|
+            schedule_standup(standup_schedule)
+          end
+        end
+
+        def schedule_standup(standup_schedule)
+          scheduler.cron standup_schedule.cron_line, schedule_id: standup_schedule.id,
+            tags: [:standup_schedules, "standup_schedule_#{standup_schedule.id}"] do |job|
+            Lita::Standups::Manager.run_schedule(robot: self, schedule_id: job.opts[:schedule_id])
+          end
+        end
+
+        def unschedule_standup(standup_schedule)
+          scheduler.jobs(tags: [:standup_schedules, "standup_schedule_#{standup_schedule.id}"]).each(&:unschedule)
         end
 
         def run_standup(standup_id, recipients, room_id)

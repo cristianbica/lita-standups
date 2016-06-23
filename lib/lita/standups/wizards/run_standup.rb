@@ -39,14 +39,11 @@ module Lita
           response.completed!
           response.answers = values
           response.save
-          if session.completed?
-            robot = message.instance_variable_get(:"@robot")
-            Lita::Standups::Manager.post_results(robot: robot, session: session)
-          end
         end
 
         def initial_message
-          "Hey. I'm running the '#{standup.name}' standup. Please answer the following questions."
+          "Hey. I'm running the '#{standup.name}' standup. Please answer the following questions " \
+            "in the next #{Lita::Standups::Manager::EXPIRATION_TIME} seconds"
         end
 
         def final_message

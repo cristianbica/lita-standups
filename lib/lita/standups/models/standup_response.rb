@@ -51,12 +51,18 @@ module Lita
 
         def report_message
           message = "#{user.name} (a.k.a @#{user.mention_name})\n"
-          questions.map.with_index do |question, index|
-            message << "> *#{question}*\n"
-            answers[index].split("\n").each do |line|
-              message << "> #{line}\n"
+          if answers.is_a?(Array)
+            questions.map.with_index do |question, index|
+              if answers[index]
+                message << "> *#{question}*\n"
+                answers[index].split("\n").each do |line|
+                  message << "> #{line}\n"
+                end
+              end
+              message << "> \n" if index < questions.count - 1
             end
-            message << "> \n" if index < questions.count - 1
+          else
+            message << "> *Expired*\n"
           end
           message
         end
