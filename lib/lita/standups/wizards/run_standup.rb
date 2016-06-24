@@ -42,9 +42,10 @@ module Lita
         end
 
         def initial_message
-          "Hey. I'm running the '#{standup.name}' standup. Please answer the following questions " \
-            "in the next #{Lita::Standups::Manager::EXPIRATION_TIME} seconds"
+          "Hey. I'm running the '#{standup.name}' standup. Please answer the following questions."
         end
+
+
 
         def final_message
           "You're done. Thanks"

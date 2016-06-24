@@ -2,7 +2,7 @@ module Lita
   module Standups
     class Manager
 
-      EXPIRATION_TIME = 3600
+      EXPIRATION_TIME = 600
 
       def self.run(robot:, standup_id:, recipients:, room:)
         session = Models::StandupSession.create(
