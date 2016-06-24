@@ -11,7 +11,7 @@ module Lita
         attribute :room
         attribute :counts, Type::Hash
         attribute :recipients, Type::Array
-        attribute :results_sent, Type::Boolean
+        attribute :results_sent
 
         reference :standup, Standup
         reference :standup_schedule, StandupSchedule
@@ -22,7 +22,7 @@ module Lita
 
         def before_create
           self.status = 'pending'
-          self.results_sent = false
+          self.results_sent = "0"
         end
 
         %w(pending running completed).each do |status_name|
@@ -32,12 +32,13 @@ module Lita
         end
 
         def update_status
-          self.counts = { 'total' => 0, 'finished' => 0 }
+          counts = { 'total' => 0, 'finished' => 0 }
           standup_responses.each do |r|
             counts[r.status] = counts[r.status].to_i + 1
             counts['total'] = counts['total'] + 1
             counts['finished'] = counts['finished'] + 1 if r.finished?
           end
+          self.counts = counts
           completed! if counts['total'] == counts['finished']
           save
         end

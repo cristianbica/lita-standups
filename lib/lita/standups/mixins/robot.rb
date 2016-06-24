@@ -19,11 +19,14 @@ module Lita
 
         def schedule_standups
           return unless scheduler_enabled?
+          Lita.logger.debug "Scheduling standups"
           scheduler.jobs.each(&:unschedule)
-          scheduler.cron '* * * * *', tags: [:standup_schedules, :abort_expired] do |job|
+          scheduler.cron '*/15 * * * * *', tags: [:standup_schedules, :abort_expired] do |job|
+            Lita.logger.debug "Checking for expired standups"
             Lita::Standups::Manager.abort_expired_standups(robot: self)
           end
-          scheduler.cron '* * * * *', tags: [:standup_schedules, :complete_finished] do |job|
+          scheduler.cron '*/15 * * * * *', tags: [:standup_schedules, :complete_finished] do |job|
+            Lita.logger.debug "Checking for completed standups"
             Lita::Standups::Manager.complete_finished_standups(robot: self)
           end
           Models::StandupSchedule.all.each do |standup_schedule|

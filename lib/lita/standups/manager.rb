@@ -36,7 +36,7 @@ module Lita
       end
 
       def self.complete_finished_standups(robot:)
-        Lita::Standups::Models::StandupSession.find(status: "completed", results_sent: false).each do |session|
+        Lita::Standups::Models::StandupSession.find(status: "completed", results_sent: "0").each do |session|
           new(robot: robot, session: session).post_results
         end
       end
@@ -74,10 +74,10 @@ module Lita
       end
 
       def post_results
-        return if session.results_sent
+        return if session.results_sent == "1"
         message = "The standup '#{standup.name}' has finished. Here's what everyone posted:\n\n#{session.report_message}"
         robot.send_message room, message
-        session.results_sent = true
+        session.results_sent = "1"
         session.save
       end
 

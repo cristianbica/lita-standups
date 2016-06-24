@@ -77,12 +77,12 @@ describe Lita::Standups::Manager do
         allow(robot).to receive(:send_message)
         expect do
           described_class.new(robot: robot, session: session).post_results
-        end.to change { Lita::Standups::Models::StandupSession[1].results_sent }.to(true)
+        end.to change { Lita::Standups::Models::StandupSession[1].results_sent }.to("1")
       end
 
       it "sholdn't post anything if already posted" do
         session = Lita::Standups::Models::StandupSession[1]
-        session.results_sent = true
+        session.results_sent = "1"
         session.save
         expect(robot).to receive(:send_message).never
         described_class.new(robot: robot, session: session).post_results
