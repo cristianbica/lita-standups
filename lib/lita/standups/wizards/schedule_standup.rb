@@ -47,10 +47,6 @@ module Lita
           @standup ||= Models::Standup[meta['standup_id']]
         end
 
-        def weekly?
-          value_for(:day_of_week) == 'weekly'
-        end
-
       end
     end
   end

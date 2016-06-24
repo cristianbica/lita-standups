@@ -13,7 +13,7 @@ require "lita-wizard"
 require "rufus-scheduler"
 require "ohm"
 require "ohm/contrib"
-require "active_support"
+require "active_support/all"
 
 require "lita/handlers/standups"
 require "lita/standups/wizards"

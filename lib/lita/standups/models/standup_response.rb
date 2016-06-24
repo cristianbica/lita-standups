@@ -29,7 +29,7 @@ module Lita
         end
 
         def before_create
-          self.status = 'pending'
+          self.status ||= 'pending'
         end
 
         def after_save

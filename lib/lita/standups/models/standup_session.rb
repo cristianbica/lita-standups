@@ -26,9 +26,6 @@ module Lita
         end
 
         %w(pending running completed).each do |status_name|
-          define_method("#{status_name}?") do
-            status == status_name
-          end
           define_method("#{status_name}!") do
             self.status = status_name
           end
@@ -61,11 +58,6 @@ module Lita
           messages << "Total finished: #{counts['finished']}"
           messages.join("\n")
         end
-
-        def data
-          (created_at || Time.current).strftime("%Y-%m-%d")
-        end
-
       end
     end
   end

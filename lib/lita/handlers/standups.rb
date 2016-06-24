@@ -110,7 +110,7 @@ module Lita
         if schedule
           request.reply "Here are the details: \n>>>\n#{schedule.description}"
         else
-          request.reply "I couldn't find a scheduled standup with ID=#{matches[0][0]}"
+          request.reply "I couldn't find a scheduled standup with ID=#{request.matches[0][0]}"
         end
       end
 
@@ -118,8 +118,8 @@ module Lita
         standup = Models::Standup[request.matches[0][0]]
         recipients = request.matches[0][1].to_s.gsub("@", "").split(/[\s,\n]/m).map(&:strip).map(&:presence).compact
         if standup
-          robot.run_standup standup.id, recipients, request.message.source.room
           request.reply "I'll run the standup shortly and post the results here. Thanks"
+          robot.run_standup standup.id, recipients, request.message.source.room
         else
           request.reply "I couldn't find a standup with ID=#{request.matches[0][0]}"
         end
@@ -135,10 +135,14 @@ module Lita
 
       def show_standup_session(request)
         session = Models::StandupSession[request.matches[0][0]]
-        message = "Here are the standup session details: \n #{session.description}\n"
-        message << "\n*Responses:*\n"
-        message << session.report_message
-        request.reply message
+        if session
+          message = "Here are the standup session details: \n #{session.description}\n"
+          message << "\n*Responses:*\n"
+          message << session.report_message
+          request.reply message
+        else
+          request.reply "I couldn't find a standup session with ID=#{request.matches[0][0]}"
+        end
       end
 
       def self.const_missing(name)
