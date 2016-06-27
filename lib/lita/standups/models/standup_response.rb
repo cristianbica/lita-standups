@@ -1,7 +1,9 @@
+require "lita/standups/models/standup_session"
+
 module Lita
   module Standups
     module Models
-      class StandupResponse < Ohm::Model
+      class StandupResponse < Base
 
         include Ohm::Callbacks
         include Ohm::Timestamps
@@ -11,7 +13,7 @@ module Lita
         attribute :user_id
         attribute :answers, Type::Array
 
-        reference :standup_session, StandupSession
+        reference :standup_session, "Lita::Standups::Models::StandupSession"
 
         index :status
         index :user_id

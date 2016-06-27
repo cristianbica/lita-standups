@@ -19,16 +19,18 @@ module Lita
 
         def schedule_standups
           return unless scheduler_enabled?
-          Lita.logger.debug "Scheduling standups"
+          Lita.logger.debug "Unscheduling any existing jobs"
           scheduler.jobs.each(&:unschedule)
+          Lita.logger.debug "Scheduling standup status jobs"
           scheduler.cron '*/15 * * * * *', tags: [:standup_schedules, :abort_expired] do |job|
-            Lita.logger.debug "Checking for expired standups"
+            Ohm.redis = Redic.new(Ohm.redis.url)
             Lita::Standups::Manager.abort_expired_standups(robot: self)
           end
           scheduler.cron '*/15 * * * * *', tags: [:standup_schedules, :complete_finished] do |job|
-            Lita.logger.debug "Checking for completed standups"
+            Ohm.redis = Redic.new(Ohm.redis.url)
             Lita::Standups::Manager.complete_finished_standups(robot: self)
           end
+          Lita.logger.debug "Scheduling standups"
           Models::StandupSchedule.all.each do |standup_schedule|
             schedule_standup(standup_schedule)
           end
@@ -38,21 +40,27 @@ module Lita
           return unless scheduler_enabled?
           scheduler.cron standup_schedule.cron_line, schedule_id: standup_schedule.id,
             tags: [:standup_schedules, "standup_schedule_#{standup_schedule.id}"] do |job|
-            Lita::Standups::Manager.run_schedule(robot: self, schedule_id: job.opts[:schedule_id])
+              Ohm.redis = Redic.new(Ohm.redis.url)
+              Lita.logger.debug "Calling run_schedule on Manager for #{job.opts[:schedule_id]}"
+              Lita::Standups::Manager.run_schedule(robot: self, schedule_id: job.opts[:schedule_id])
           end
         end
 
         def unschedule_standup(standup_schedule)
           return unless scheduler_enabled?
+          Lita.logger.debug "Unscheduling standup scheduled #{standup_schedule.id}"
           scheduler.jobs(tags: [:standup_schedules, "standup_schedule_#{standup_schedule.id}"]).each(&:unschedule)
         end
 
         def run_standup(standup_id, recipients, room_id)
           if scheduler_enabled?
             scheduler.in "5s", tags: [:standup_schedules, :run_standup] do |job|
+              Ohm.redis = Redic.new(Ohm.redis.url)
+              Lita.logger.debug "Calling run on Manager for standup #{standup_id} (recipients: #{recipients.join(", ")}"
               Lita::Standups::Manager.run(robot: self, standup_id: standup_id, recipients: recipients, room: room_id)
             end
           else
+            Lita.logger.debug "Calling run on Manager for standup #{standup_id} (recipients: #{recipients.join(", ")}"
             Lita::Standups::Manager.run(robot: self, standup_id: standup_id, recipients: recipients, room: room_id)
           end
         end

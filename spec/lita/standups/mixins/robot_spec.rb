@@ -41,7 +41,7 @@ describe "Robot Mixin" do
     it "should try to run a standup inline" do
       expect(scheduler).to receive(:in).never
       expect(Lita::Standups::Manager).to receive(:run).once
-      robot.run_standup("standup_id", "recipients", "room_id")
+      robot.run_standup("standup_id", ["recipients"], "room_id")
     end
   end
 
@@ -75,7 +75,7 @@ describe "Robot Mixin" do
     it "should try to run a standup in the scheduler" do
       expect(scheduler).to receive(:in).once
       expect(Lita::Standups::Manager).to receive(:run).never
-      robot.run_standup("standup_id", "recipients", "room_id")
+      robot.run_standup("standup_id", ["recipients"], "room_id")
     end
   end
 
@@ -100,7 +100,7 @@ describe "Robot Mixin" do
     end
 
     it "should run a standup inside the scheduler" do
-      robot.run_standup("standup_id", "recipients", "room_id")
+      robot.run_standup("standup_id", ["recipients"], "room_id")
       expect(Lita::Standups::Manager).to receive(:run)
       scheduler.jobs(tags: [:run_standup]).first.call
     end

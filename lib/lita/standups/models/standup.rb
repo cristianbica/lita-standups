@@ -1,7 +1,9 @@
+require "lita/standups/models/standup_schedule"
+
 module Lita
   module Standups
     module Models
-      class Standup < Ohm::Model
+      class Standup < Base
 
         include Ohm::Callbacks
         include Ohm::Timestamps
@@ -10,7 +12,7 @@ module Lita
         attribute :name
         attribute :questions, Type::Array
 
-        collection :schedules, StandupSchedule, :standup
+        collection :schedules, "Lita::Standups::Models::StandupSchedule", :standup
 
         def summary
           "#{name} (ID: #{id}) - #{questions.size} question(s)"

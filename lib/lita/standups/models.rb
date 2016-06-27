@@ -1,12 +1,12 @@
 module Lita
   module Standups
     module Models
-      extend ActiveSupport::Autoload
-
-      autoload :Standup
-      autoload :StandupResponse
-      autoload :StandupSchedule
-      autoload :StandupSession
     end
   end
 end
+
+require "lita/standups/models/base"
+require "lita/standups/models/standup"
+require "lita/standups/models/standup_response"
+require "lita/standups/models/standup_schedule"
+require "lita/standups/models/standup_session"

@@ -1,3 +1,5 @@
+require "active_support/core_ext/object/blank"
+
 module Lita
   module Standups
     module Wizards
@@ -11,10 +13,12 @@ module Lita
              multiline: true
 
         def finish_wizard
+          Lita.logger.debug "Finishing wizard CreateStandup for user #{user_id}"
           @standup = Models::Standup.create(
             name: value_for(:name),
             questions: value_for(:questions).to_s.split("\n").map(&:strip).map(&:presence).compact
           )
+          Lita.logger.debug "Created standup: #{@standup.summary}"
         end
 
         def final_message

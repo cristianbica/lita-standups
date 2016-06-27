@@ -1,7 +1,9 @@
+require "lita/standups/models/standup"
+
 module Lita
   module Standups
     module Models
-      class StandupSchedule < Ohm::Model
+      class StandupSchedule < Base
 
         include Ohm::Callbacks
         include Ohm::Timestamps
@@ -13,7 +15,7 @@ module Lita
         attribute :recipients, Type::Array
         attribute :channel
 
-        reference :standup, Standup
+        reference :standup, "Lita::Standups::Models::Standup"
 
         def cron_line
           [

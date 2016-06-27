@@ -32,6 +32,15 @@ describe Lita::Standups::Manager do
       end.to change { Lita::Standups::Models::StandupSession.all.count }.by(1)
     end
 
+    it "should log exceptions and raise them when trying to run a schedule" do
+      allow_any_instance_of(described_class).to receive(:run).and_raise(Exception)
+      allow(Lita.logger).to receive(:debug)
+      expect(Lita.logger).to receive(:debug).at_least(:once).with(/^Got exception/)
+      expect do
+        described_class.run_schedule(robot: robot, schedule_id: "1")
+      end.to raise_exception(Exception)
+    end
+
     it "should mark expired reponses as expired" do
       responses = [Lita::Standups::Models::StandupResponse[1], Lita::Standups::Models::StandupResponse[2]]
       responses[0].created_at = Time.now - 100_000
@@ -61,6 +70,20 @@ describe Lita::Standups::Manager do
 
       it "should start the run wizard" do
         expect(Lita::Standups::Wizards::RunStandup).to receive(:start)
+        described_class.run(robot: robot, standup_id: "1", recipients: %w(1), room: "#a")
+      end
+
+      it "should log exceptions when ask_question raises an exception" do
+        allow(Lita::Standups::Wizards::RunStandup).to receive(:start).and_raise(Exception)
+        allow(Lita.logger).to receive(:debug)
+        expect(Lita.logger).to receive(:debug).at_least(:once).with(/^Got exception/)
+        described_class.run(robot: robot, standup_id: "1", recipients: %w(1), room: "#a")
+      end
+
+      it "should mark the response as aborted when ask_question raises an exception" do
+        allow(Lita::Standups::Wizards::RunStandup).to receive(:start).and_raise(Exception)
+        expect_any_instance_of(Lita::Standups::Models::StandupResponse).to \
+          receive(:aborted!).once
         described_class.run(robot: robot, standup_id: "1", recipients: %w(1), room: "#a")
       end
     end

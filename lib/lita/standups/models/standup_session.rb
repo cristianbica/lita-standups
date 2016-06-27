@@ -1,7 +1,11 @@
+require "lita/standups/models/standup"
+require "lita/standups/models/standup_schedule"
+require "lita/standups/models/standup_response"
+
 module Lita
   module Standups
     module Models
-      class StandupSession < Ohm::Model
+      class StandupSession < Base
 
         include Ohm::Callbacks
         include Ohm::Timestamps
@@ -13,9 +17,9 @@ module Lita
         attribute :recipients, Type::Array
         attribute :results_sent
 
-        reference :standup, Standup
-        reference :standup_schedule, StandupSchedule
-        collection :standup_responses, StandupResponse, :standup_session
+        reference :standup, "Lita::Standups::Models::Standup"
+        reference :standup_schedule, "Lita::Standups::Models::StandupSchedule"
+        collection :standup_responses, "Lita::Standups::Models::StandupResponse", :standup_session
 
         index :status
         index :results_sent
