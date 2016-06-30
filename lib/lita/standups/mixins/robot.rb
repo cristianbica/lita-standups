@@ -65,6 +65,19 @@ module Lita
           end
         end
 
+        def jobs_info
+          scheduler.jobs.map do |job|
+            [
+              "Type: #{job.class}",
+              "ID: #{job.job_id}",
+              "Tags: #{job.tags.join(', ')}",
+              ("Options: #{job.opts.except(:tags).inspect}" if job.opts.except(:tags).size > 0),
+              "Next Run: #{job.next_time} (#{Time.now - job.next_time} seconds from now)",
+              "Schedule: #{job.try(:original)}"
+            ].compact
+          end
+        end
+
         # :nocov:
         def run
           schedule_standups

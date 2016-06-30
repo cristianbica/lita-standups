@@ -2,6 +2,9 @@ module Lita
   module Handlers
     class Standups < Handler
 
+      route(/^debug standups$/, :debug_standups,
+            command: true)
+
       route(/^list standups$/, :list_standups,
             command: true,
             help: { 'list standups' => 'list configured standups' })
@@ -147,6 +150,25 @@ module Lita
 
       def self.const_missing(name)
         Lita::Standups.const_defined?(name) ? Lita::Standups.const_get(name) : super
+      end
+
+      def debug_standups(request)
+        request.reply "*Standups*"
+        Models::Standup.all.each do |standup|
+          request.reply ">>> \n" + standup.description
+          request.reply "```\n#{standup.inspect}\n```"
+        end
+
+        request.reply "*Scheduled Standups*"
+        Models::StandupSchedule.all.each do |schedule|
+          request.reply ">>> \n" + schedule.description
+          request.reply "```\n#{schedule.inspect}\n```"
+        end
+
+        request.reply "*Rufus Schedule*"
+        request.reply robot.jobs_info.map{|j| "```\n" + j.join("\n") + "\n```" }.join("\n\n")
+
+        request.reply "*Server time*: #{Time.now}"
       end
 
       Lita.register_handler(self)
