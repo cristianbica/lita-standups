@@ -4,7 +4,7 @@ module Lita
   module Standups
     class Manager
 
-      EXPIRATION_TIME = 600
+      DEFAULT_EXPIRATION_TIME = 3600
 
       def self.run(robot:, standup_id:, recipients:, room:)
         session = Models::StandupSession.create(
@@ -37,7 +37,7 @@ module Lita
       def self.abort_expired_standups(robot:)
         Lita.logger.debug "Checking for expired standups"
         Lita::Standups::Models::StandupResponse.find(status: "pending").union(status: "running").each do |response|
-          next unless Time.current - response.created_at > EXPIRATION_TIME
+          next unless Time.current - response.created_at > DEFAULT_EXPIRATION_TIME
           Lita.logger.debug "Found expired standup response: #{response.inspect}. Expiring ..."
           response.expired!
           response.save

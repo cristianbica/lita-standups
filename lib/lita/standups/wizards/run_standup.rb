@@ -42,7 +42,8 @@ module Lita
         end
 
         def initial_message
-          "Hey. I'm running the '#{standup.name}' standup. Please answer the following questions."
+          "Hey. I'm running the '#{standup.name}' standup. Please answer the following questions." \
+            " (this session expires in 1 hour)"
         end
 
         def final_message
