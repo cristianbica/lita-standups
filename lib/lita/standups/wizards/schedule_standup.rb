@@ -13,7 +13,7 @@ module Lita
              if: ->(wizard) { value_for(:repeat) == 'weekly' }
 
         step :time,
-             label: 'At what time? (ex 9am)',
+             label: 'At what time? (ex 9am - time will be considered GMT time)',
              validate: /^([1-9]|1[0-2]|0[1-9])?(:[0-5][0-9])?\s?([aApP][mM])?$/
 
         step :recipients,

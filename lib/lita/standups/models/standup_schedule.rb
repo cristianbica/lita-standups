@@ -23,7 +23,8 @@ module Lita
             time.hour,
             "*",
             "*",
-            (weekly? ? day_of_week_index : "*")
+            (weekly? ? day_of_week_index : "*"),
+            "UTC"
           ].join(" ")
         end
 

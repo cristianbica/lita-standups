@@ -72,7 +72,7 @@ module Lita
               "ID: #{job.job_id}",
               "Tags: #{job.tags.join(', ')}",
               ("Options: #{job.opts.except(:tags).inspect}" if job.opts.except(:tags).size > 0),
-              "Next Run: #{job.next_time} (#{Time.now - job.next_time} seconds from now)",
+              "Next Run: #{job.next_time} (#{job.next_time - Time.now} seconds from now)",
               "Schedule: #{job.try(:original)}"
             ].compact
           end
