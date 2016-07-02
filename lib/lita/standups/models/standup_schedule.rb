@@ -23,9 +23,15 @@ module Lita
             time.hour,
             "*",
             "*",
-            (weekly? ? day_of_week_index : "*"),
+            cron_line_week,
             "UTC"
           ].join(" ")
+        end
+
+        def cron_line_week
+          return "*" if daily?
+          return "1,2,3,4,5" if workdays?
+          return day_of_week_index if weekly?
         end
 
         def day_of_week_index
@@ -47,8 +53,16 @@ module Lita
           ].join("\n")
         end
 
+        def daily?
+          repeat == "daily"
+        end
+
         def weekly?
           repeat == "weekly"
+        end
+
+        def workdays?
+          repeat == "workdays"
         end
 
       end

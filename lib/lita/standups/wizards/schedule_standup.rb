@@ -4,8 +4,8 @@ module Lita
       class ScheduleStandup < Lita::Wizard
 
         step :repeat,
-             label: 'How often? (daily, weekly)',
-             options: %w(daily weekly)
+             label: 'How often? (daily, weekly, workdays)',
+             options: %w(daily weekly workdays)
 
         step :day_of_week,
              label: 'What day of week? (monday ... sunday)',

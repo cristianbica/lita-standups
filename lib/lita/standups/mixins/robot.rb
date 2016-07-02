@@ -65,6 +65,7 @@ module Lita
           end
         end
 
+        # :nocov:
         def jobs_info
           scheduler.jobs.map do |job|
             [
@@ -78,7 +79,6 @@ module Lita
           end
         end
 
-        # :nocov:
         def run
           schedule_standups
           super

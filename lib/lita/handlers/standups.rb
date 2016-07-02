@@ -152,6 +152,7 @@ module Lita
         Lita::Standups.const_defined?(name) ? Lita::Standups.const_get(name) : super
       end
 
+      # :nocov:
       def debug_standups(request)
         request.reply "*Standups*"
         Models::Standup.all.each do |standup|
@@ -170,6 +171,7 @@ module Lita
 
         request.reply "*Server time*: #{Time.now}"
       end
+      # :nocov:
 
       Lita.register_handler(self)
     end
